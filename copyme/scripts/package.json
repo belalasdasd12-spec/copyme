@@ -1,0 +1,9 @@
+{
+  "name": "copyme-scripts",
+  "private": true,
+  "type": "module",
+  "description": "Helper scripts for the copyme skill",
+  "dependencies": {
+    "playwright-core": "^1.48.0"
+  }
+}
