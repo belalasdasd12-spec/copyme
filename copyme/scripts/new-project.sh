@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# bash new-project.sh <dest>   e.g. zsh new-project.sh ~/Downloads/site/rebuild
+# bash new-project.sh <dest>   e.g. bash new-project.sh ~/Downloads/site/rebuild
 # Ready Next 15 + Tailwind v4 + lucide-react + gsap project in seconds: a cached base is built once
 # (~/.cache/copyme/base, rebuilt when older than 30 days) and cloned with APFS copy-on-write (cp -c).
 # Then copy only the templates this site needs from <skill>/templates (they are references, adapt them).
