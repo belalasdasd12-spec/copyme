@@ -1,8 +1,9 @@
 // Paste with Chrome DevTools MCP evaluate_script (waitForStableDom:false), then:
-//   await window.__rec(() => document.querySelector('<trigger>').click(), 800 /*ms*/, '<optional selector to track>')
+//   await window.__rec(() => document.querySelector('<trigger>').click(), 800 /*ms*/, '<optional selector to track>', /*brief*/ true)
+//   brief (default) keeps ~1 sample per 40 ms + every peak/dip; pass false only when a curve needs every frame
 // Returns { appeared: ["<ms> <element>"], tracks: { "<element>": ["<ms> op.. s.. x.. y.. clip=.. f=.. vis=.."] } }
 () => {
-  window.__rec = async (trigger, ms = 700, pick) => {
+  window.__rec = async (trigger, ms = 700, pick, brief = true) => {
     const t0 = performance.now();
     const touched = new Map();
     const mo = new MutationObserver((ms) => {
@@ -31,6 +32,17 @@
       await new Promise((r) => requestAnimationFrame(r));
     }
     mo.disconnect();
+    // brief: keep a sample every ~40 ms plus every turning point (peak / dip of scale, opacity, x, y) — enough for linear()
+    if (brief) for (const k in tr) {
+      const rows = tr[k], num = (r, key) => +((r.match(new RegExp(" " + key + "(-?[\\d.]+)")) || [])[1] ?? NaN);
+      let last = -1e9;
+      tr[k] = rows.filter((r, i) => {
+        const t = +r.split(" ")[0];
+        const turn = i > 0 && i < rows.length - 1 && ["s", "op", "x", "y"].some((key) => { const a = num(rows[i - 1], key), b = num(r, key), c = num(rows[i + 1], key); return (b - a) * (c - b) < 0; });
+        if (i === 0 || i === rows.length - 1 || turn || t - last >= 40) { last = t; return true; }
+        return false;
+      });
+    }
     const anims = document.getAnimations().map((a) => { const t = a.effect?.getTiming?.() || {}; return `${a.constructor.name} ${a.animationName || a.transitionProperty || ""} ${t.duration}ms d${t.delay} ${t.easing}`; });
     return { appeared: [...touched].map(([e, t]) => `${t} ${name(e)}`), tracks: tr, cssAnimations: anims.slice(0, 20) };
   };

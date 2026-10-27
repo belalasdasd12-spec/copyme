@@ -19,6 +19,11 @@ screenshots, real-input tests and frame-by-frame motion measurements.
    easings — panels, page entrances, tab indicators, toasts, button presses.
 6. **Checks performance** (~60 fps scrolling on a production build) and finishes with a README.
 
+It is built to stay fast and light on tokens without losing fidelity: one compact summary of the capture instead of
+raw files, numeric screenshot diffs that point at the exact regions to look at, motion values read from the
+reference's own tween calls when it has them, a cached starter project, and one verification gate. You run Enrichr
+yourself and hand over the folder — the skill never installs or drives it.
+
 ## Requirements
 
 - [Claude Code](https://docs.anthropic.com/en/docs/claude-code)
@@ -65,7 +70,8 @@ copyme/
     liquid-glass.md        SVG-refraction glass and its performance rule
     lessons.md             traps that cost time on real runs
     setup.md               MCP and script setup
-  scripts/                 screenshot, comparison, route capture, motion recorder, tests, fps probe
+  scripts/                 capture summary, starter project, screenshots, numeric diff, route capture,
+                           motion recorder, tests, verify gate, fps probe
   templates/               motion helpers and shell components to start from
 ```
 
